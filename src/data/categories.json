@@ -1,0 +1,30 @@
+[
+  {
+    "id": "singers",
+    "name": "Singers",
+    "description": "Professional vocalists for any event",
+    "icon": "mic",
+    "count": 245
+  },
+  {
+    "id": "dancers",
+    "name": "Dancers", 
+    "description": "Choreographers and performers",
+    "icon": "music",
+    "count": 189
+  },
+  {
+    "id": "speakers",
+    "name": "Speakers",
+    "description": "Motivational and keynote speakers",
+    "icon": "megaphone",
+    "count": 156
+  },
+  {
+    "id": "djs",
+    "name": "DJs",
+    "description": "Music producers and event DJs",
+    "icon": "headphones",
+    "count": 198
+  }
+]
