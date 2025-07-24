@@ -174,7 +174,7 @@ const Onboard = () => {
                     >
                       <Checkbox
                         checked={selectedCategories.includes(category)}
-                        onChange={() => handleCategoryToggle(category)}
+                        onCheckedChange={() => handleCategoryToggle(category)}
                       />
                       <Label className="cursor-pointer">{category}</Label>
                     </div>
@@ -233,7 +233,7 @@ const Onboard = () => {
                     >
                       <Checkbox
                         checked={selectedLanguages.includes(language)}
-                        onChange={() => handleLanguageToggle(language)}
+                        onCheckedChange={() => handleLanguageToggle(language)}
                       />
                       <Label className="cursor-pointer">{language}</Label>
                     </div>
