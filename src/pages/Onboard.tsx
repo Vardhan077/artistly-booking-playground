@@ -1,6 +1,7 @@
 
 import { useState, useCallback } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import Navigation from "@/components/ui/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useAppContext } from "@/contexts/AppContext";
 import { Upload, X, CheckCircle, User, FileText, DollarSign, MapPin } from "lucide-react";
 
 interface FormData {
@@ -31,7 +33,10 @@ const Onboard = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { addUser } = useAppContext();
+  const navigate = useNavigate();
 
   const { register, handleSubmit, control, formState: { errors }, watch } = useForm<FormData>();
 
@@ -60,20 +65,65 @@ const Onboard = () => {
     });
   }, []);
 
-  const onSubmit = (data: FormData) => {
-    console.log("Artist Registration Data:", {
-      ...data,
-      categories: selectedCategories,
-      languages: selectedLanguages,
-    });
+  const onSubmit = async (data: FormData) => {
+    if (selectedCategories.length === 0) {
+      toast({
+        title: "Error",
+        description: "Please select at least one category.",
+        variant: "destructive",
+      });
+      return;
+    }
     
-    toast({
-      title: "Registration Successful!",
-      description: "Your artist profile has been submitted for review. We'll contact you within 24 hours.",
-    });
+    if (selectedLanguages.length === 0) {
+      toast({
+        title: "Error",
+        description: "Please select at least one language.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
     
-    // Reset form or redirect
-    setCurrentStep(1);
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Save user data to context
+      addUser({
+        name: data.name,
+        bio: data.bio,
+        categories: selectedCategories,
+        languages: selectedLanguages,
+        feeRange: data.feeRange,
+        location: data.location,
+        experience: data.experience,
+        specialties: data.specialties,
+        portfolio: data.portfolio,
+        profileImage: data.profileImage?.[0] || null,
+        isArtist: true,
+      });
+      
+      toast({
+        title: "Registration Successful!",
+        description: "Your artist profile has been created! Redirecting to dashboard...",
+      });
+      
+      // Redirect to dashboard after successful submission
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1500);
+      
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const nextStep = () => setCurrentStep(Math.min(currentStep + 1, totalSteps));
@@ -418,9 +468,14 @@ const Onboard = () => {
                   ) : (
                     <Button
                       type="submit"
-                      disabled={!watch("location") || selectedCategories.length === 0 || selectedLanguages.length === 0}
+                      disabled={
+                        !watch("location") || 
+                        selectedCategories.length === 0 || 
+                        selectedLanguages.length === 0 ||
+                        isSubmitting
+                      }
                     >
-                      Submit Application
+                      {isSubmitting ? "Submitting..." : "Submit Application"}
                     </Button>
                   )}
                 </div>

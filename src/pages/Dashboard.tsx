@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Navigation from "@/components/ui/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useAppContext } from "@/contexts/AppContext";
 import { 
   Users, 
   Calendar, 
@@ -49,9 +50,10 @@ interface BookingRequest {
 const Dashboard = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const { toast } = useToast();
+  const { artists, updateUserStatus, currentUser } = useAppContext();
 
-  // Mock data for artist submissions
-  const artistSubmissions: ArtistSubmission[] = [
+  // Convert app context artists to dashboard format, including mock data
+  const mockArtists: ArtistSubmission[] = [
     {
       id: 1,
       name: "Emma Thompson",
@@ -74,41 +76,22 @@ const Dashboard = () => {
       rating: 4.8,
       languages: ["English", "Spanish"],
       experience: "6 years"
-    },
-    {
-      id: 3,
-      name: "Priya Patel",
-      category: "Dancer",
-      city: "San Francisco, CA",
-      feeRange: "$500-1000",
-      status: "pending",
-      submittedDate: "2024-01-19",
-      languages: ["English", "Hindi"],
-      experience: "10 years"
-    },
-    {
-      id: 4,
-      name: "Michael Chen",
-      category: "Speaker",
-      city: "Seattle, WA",
-      feeRange: "$1500-3000",
-      status: "approved",
-      submittedDate: "2024-01-15",
-      rating: 4.9,
-      languages: ["English", "Mandarin"],
-      experience: "12 years"
-    },
-    {
-      id: 5,
-      name: "Sarah Williams",
-      category: "Singer",
-      city: "Nashville, TN",
-      feeRange: "$800-1500",
-      status: "rejected",
-      submittedDate: "2024-01-17",
-      languages: ["English"],
-      experience: "4 years"
     }
+  ];
+
+  const artistSubmissions: ArtistSubmission[] = [
+    ...mockArtists,
+    ...artists.map(artist => ({
+      id: parseInt(artist.id),
+      name: artist.name,
+      category: artist.categories[0] || "Artist",
+      city: artist.location,
+      feeRange: artist.feeRange,
+      status: artist.status,
+      submittedDate: artist.joinedDate.split('T')[0],
+      languages: artist.languages,
+      experience: artist.experience || "Not specified"
+    }))
   ];
 
   // Mock data for booking requests
@@ -160,6 +143,13 @@ const Dashboard = () => {
 
   const handleArtistAction = (artistId: number, action: "approve" | "reject") => {
     const artist = artistSubmissions.find(a => a.id === artistId);
+    
+    // Update in context if it's a real user (not mock data)
+    const contextArtist = artists.find(a => parseInt(a.id) === artistId);
+    if (contextArtist) {
+      updateUserStatus(contextArtist.id, action === "approve" ? "approved" : "rejected");
+    }
+    
     toast({
       title: `Artist ${action === "approve" ? "Approved" : "Rejected"}`,
       description: `${artist?.name} has been ${action === "approve" ? "approved" : "rejected"} successfully.`,
