@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useCallback } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +33,7 @@ const Onboard = () => {
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const { toast } = useToast();
 
-  const { register, handleSubmit, control, formState: { errors }, watch, setValue } = useForm<FormData>();
+  const { register, handleSubmit, control, formState: { errors }, watch } = useForm<FormData>();
 
   const totalSteps = 4;
   const progress = (currentStep / totalSteps) * 100;
@@ -41,21 +42,23 @@ const Onboard = () => {
   const languages = ["English", "Spanish", "French", "German", "Italian", "Portuguese", "Mandarin", "Hindi", "Arabic", "Japanese"];
   const feeRanges = ["$200-500", "$500-1000", "$1000-2000", "$2000-5000", "$5000+"];
 
-  const handleCategoryToggle = (category: string) => {
-    const updated = selectedCategories.includes(category)
-      ? selectedCategories.filter(c => c !== category)
-      : [...selectedCategories, category];
-    setSelectedCategories(updated);
-    setValue("categories", updated);
-  };
+  const handleCategoryToggle = useCallback((category: string) => {
+    setSelectedCategories(prev => {
+      const updated = prev.includes(category)
+        ? prev.filter(c => c !== category)
+        : [...prev, category];
+      return updated;
+    });
+  }, []);
 
-  const handleLanguageToggle = (language: string) => {
-    const updated = selectedLanguages.includes(language)
-      ? selectedLanguages.filter(l => l !== language)
-      : [...selectedLanguages, language];
-    setSelectedLanguages(updated);
-    setValue("languages", updated);
-  };
+  const handleLanguageToggle = useCallback((language: string) => {
+    setSelectedLanguages(prev => {
+      const updated = prev.includes(language)
+        ? prev.filter(l => l !== language)
+        : [...prev, language];
+      return updated;
+    });
+  }, []);
 
   const onSubmit = (data: FormData) => {
     console.log("Artist Registration Data:", {
