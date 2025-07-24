@@ -168,18 +168,22 @@ const Onboard = () => {
                   {categories.map((category) => (
                     <div
                       key={category}
-                      className={`flex items-center space-x-2 p-3 rounded-lg border cursor-pointer transition-colors ${
+                      className={`flex items-center space-x-2 p-3 rounded-lg border transition-colors ${
                         selectedCategories.includes(category)
                           ? "border-primary bg-primary/5"
                           : "border-muted hover:border-primary/50"
                       }`}
-                      onClick={() => handleCategoryToggle(category)}
                     >
                       <Checkbox
                         checked={selectedCategories.includes(category)}
                         onCheckedChange={() => handleCategoryToggle(category)}
                       />
-                      <Label className="cursor-pointer">{category}</Label>
+                      <Label 
+                        className="cursor-pointer flex-1"
+                        onClick={() => handleCategoryToggle(category)}
+                      >
+                        {category}
+                      </Label>
                     </div>
                   ))}
                 </div>
@@ -227,18 +231,22 @@ const Onboard = () => {
                   {languages.map((language) => (
                     <div
                       key={language}
-                      className={`flex items-center space-x-2 p-3 rounded-lg border cursor-pointer transition-colors ${
+                      className={`flex items-center space-x-2 p-3 rounded-lg border transition-colors ${
                         selectedLanguages.includes(language)
                           ? "border-primary bg-primary/5"
                           : "border-muted hover:border-primary/50"
                       }`}
-                      onClick={() => handleLanguageToggle(language)}
                     >
                       <Checkbox
                         checked={selectedLanguages.includes(language)}
                         onCheckedChange={() => handleLanguageToggle(language)}
                       />
-                      <Label className="cursor-pointer">{language}</Label>
+                      <Label 
+                        className="cursor-pointer flex-1"
+                        onClick={() => handleLanguageToggle(language)}
+                      >
+                        {language}
+                      </Label>
                     </div>
                   ))}
                 </div>
